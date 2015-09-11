@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+.link {
+  stroke: #ccc;
+}
+
+.node text {
+  pointer-events: none;
+  font: 7px sans-serif;
+}
+
+</style>
+<body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+<script>
+
+var width = 900,
+    height = 700
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+var force = d3.layout.force()
+    .gravity(.02)
+    .distance(13)
+    .charge(-2.5)
+    .alpha(0.8)
+    .size([width, height]);
+
+d3.json("trialfile.json", function(error, json) {
+  if (error) throw error;
+
+  force
+      .nodes(json.nodes)
+      .links(json.links)
+      .start();
+
+  var link = svg.selectAll(".link")
+      .data(json.links)
+    .enter().append("line")
+      .attr("class", "link");
+
+  var node = svg.selectAll(".node")
+      .data(json.nodes)
+    .enter().append("g")
+      .attr("class", "node")
+      .call(force.drag);
+
+  node.append("image")
+      .attr("xlink:href", function(d) { if (d.type === "PCP") {return "http://www.clker.com/cliparts/4/2/l/3/j/x/boton-verde-oscuro-md.png"; } else { return "http://i.imgur.com/CwwuJHq.png";} })
+      .attr("x", -5)
+      .attr("y", -5)
+      .attr("width", 8)
+      .attr("height", 8);
+
+  node.append("text")
+      .attr("dx", 10)
+      .attr("dy", ".35em")
+      .text(function(d) { return d.name ;})
+      .style("opacity", 0);
+
+  force.on("tick", function() {
+    link.attr("x1", function(d) { return d.source.x; })
+        .attr("y1", function(d) { return d.source.y; })
+        .attr("x2", function(d) { return d.target.x; })
+        .attr("y2", function(d) { return d.target.y; });
+
+  node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+
+  d3.selectAll("g").on("mouseover", function(){d3.select(this).select("text").style("opacity", 0.5)})
+    .on("mouseout", function(){d3.select(this).select("text").style("opacity", 0)});
+
+
+  });
+});
+
+</script>
