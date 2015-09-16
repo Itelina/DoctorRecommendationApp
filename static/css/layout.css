@@ -1,0 +1,183 @@
+body{
+	width:1300px;
+}
+
+#header {
+    background-color:white;
+    color:#2171b5;
+    top:0px;
+    padding:0px;
+    position:fixed;
+    z-index: 2;
+    width: 1300px;
+    height:10%;
+/*    border-bottom-width:1px;
+    border-bottom-color:#d9d9d9;
+    border-bottom-style: solid;*/
+}
+
+#title{
+	position:relative;
+	left: 10%;
+	font-size: 0.70em;
+	text-shadow: 0.5px 0.5px black;
+}
+
+img {
+    vertical-align: text-bottom;
+}
+
+#body{
+	top: 88px;
+	width: 1300px;
+	height:600px;
+	z-index: 2;
+	overflow-y: auto;
+}
+.ui-menu-item{
+	font-size:10px;
+}
+
+#loader{
+	position:absolute;
+	top:170px;
+	left:270px;
+	display: none;
+}
+
+#loader2{
+	position:absolute;
+	top:170px;
+	left:220px;
+	display: none;
+}
+
+#tags{
+	font-size:10px;
+	width:165px;
+}
+
+#search{
+	position:fixed;
+	left:1090px;
+	top:100px;
+	width:50px;
+	height:50px;
+	z-index:3;
+}
+
+#type{
+	width:170px;
+}
+
+#classification{
+	width:170px;
+}
+
+#specialization{
+	width:170px;
+}
+
+#type2{
+	width:170px;
+}
+
+#classification2{
+	width:170px;
+}
+
+#specialization2{
+	width:170px;
+}
+
+#searchbox{
+	position:fixed;
+	background-color:#f7fbff;
+	border-style: solid;
+	border-width: 1px;
+	border-color:#d9d9d9;
+	color:grey;
+	top:64px;
+	left:0;
+	width: 1300px;
+	height: 14%;
+	font-size: 12px;
+	z-index: 1;
+}
+
+#searchoptions{
+	position:absolute;
+	top: 10%;
+	left: 5%;
+}
+
+.link {
+  stroke: #ccc;
+}
+
+.node text {
+  pointer-events: none;
+  font: 7px sans-serif;
+}
+
+#network{
+	position:absolute;
+	top: 25%;
+	left:0px;
+	width:650px;
+	height:400px;
+	padding-bottom:20px;
+}
+
+#networktitle{
+	color:grey;
+	height:20px;
+}
+
+#networksummary{
+	position:absolute;
+	left:650px;
+	top: 25%;
+	width:500px;
+	height:430px;
+}
+
+#doctorslist {
+	overflow-y: auto;
+	height:380px;
+	width:100%;
+}
+
+#doctors{
+	font-size:11px;
+}
+
+a {
+  color: #252525;
+  text-decoration: none;
+}
+
+a:visited {
+  color: #969696;
+}
+
+a:hover {
+  color: #3182bd;
+}
+
+a:active {
+    background-color: #636363;
+}
+
+#footer {
+    background-color:white;
+    position:fixed;
+    bottom:0;
+    width:1300px;
+    height:20px;
+    left:0;
+    font-size:0.6em;
+    color:grey;
+    clear:both;
+    text-align:center;
+}

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">
+
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<script src="../static/js/chain.min.js"></script>
+<link rel="stylesheet" type="text/css" href="static/css/layout.css">
+
+</head>
+
+<body>
+<div id="header">
+<div id="title">
+<h2><img src="../static/pics/doctor.png" alt="Icon" style="width:43px;height:43px;">Provider Search Companion</h2>
+</div>
+</div>
+
+<div id="body">
+<div id="searchbox">
+<table id = "searchoptions">
+
+<tr height="22">
+<td><strong> Select City </strong><td>
+<td> <center>City </center></td>
+<td>
+<script>var cities = {{ cities|safe }}; </script>
+<script src="../static/js/cities.js">
+
+</script>
+<div class="ui-widget">
+  <input id="tags">
+</div>
+</td>
+
+</tr>
+
+<tr height="22">
+<td><strong>Select Referring Doctor </strong><td>
+<td width ="50"> <center>Type </center></td>
+<td>
+<select id="type" name="type">
+	<option value="">--</option>
+	{% for type in classdict.keys() %}
+  		<option value="{{type}}">{{type}}</option>
+	{% endfor %}
+</select>
+</td>
+
+<td width ="90"><center> Classification </center></td>
+<td>
+<select id="classification" name="classification">
+	<option value="">--</option>
+	{% for type, value in classdict.iteritems() %}
+		{% for classf in value.keys() %}
+	  		<option class="{{type}}" value="{{classf}}">{{classf}}</option>
+		{% endfor %}
+	{% endfor %}
+</select>
+</td>
+
+
+<td width ="150"><center> Specialization (Optional) </center> </td>
+<td>
+<select id="specialization" name="specialization">
+	<option value="">--</option>
+	{% for type, value in classdict.iteritems() %}
+		{% for classf, spec in value.iteritems() %}
+		<option class="{{classf}}" value="All">All</option>
+			{% for value in spec %}
+	  			<option class="{{classf}}" value="{{value}}">{{value}}</option>
+	  		{% endfor %}
+		{% endfor %}
+	{% endfor %}
+</select>
+</td>
+
+<script>
+$("#classification").chainedTo("#type"); 
+$("#specialization").chainedTo("#classification"); 
+</script>
+
+</tr>
+
+<tr height="22">
+<td><strong> Select Referred-To Doctor </strong><td>
+<td><center> Type </center></td>
+<td>
+<select id="type2" name="type2">
+	<option value="">--</option>
+	{% for type in classdict.keys() %}
+  		<option value="{{type}}">{{type}}</option>
+	{% endfor %}
+</select>
+</td>
+
+<td> <center> Classification </center> </td>
+<td>
+<select id="classification2" name="classification2">
+	<option value="">--</option>
+	{% for type, value in classdict.iteritems() %}
+		{% for classf in value.keys() %}
+	  		<option class="{{type}}" value="{{classf}}">{{classf}}</option>
+		{% endfor %}
+	{% endfor %}
+</select>
+</td>
+
+<script>
+$("#classification2").chainedTo("#type2"); 
+</script>
+
+<td> <center> Specialization (Optional) </center></td>
+<td>
+<select id="specialization2" name="specialization2">
+	<option value="">--</option>
+	{% for type, value in classdict.iteritems() %}
+		{% for classf, spec in value.iteritems() %}
+		<option class="{{classf}}" value="All">All</option>
+			{% for value in spec %}
+	  			<option class="{{classf}}" value="{{value}}">{{value}}</option>
+	  		{% endfor %}
+		{% endfor %}
+	{% endfor %}
+</select>
+</td>
+
+<script>
+$("#specialization2").chainedTo("#classification2"); 
+</script>
+
+</tr>
+</table>
+</div>
+
+<div id="search">
+<img src="../static/pics/search5.png" alt="search" style="width:40px;height:40px;"><a href="javascript:void();" id="search"></a></img>
+</div>
+
+<div id="network">
+<h4 id="networktitle"><center>Provider Network Visualizer</center></h4>
+<img id= "loader" src="../static/pics/ajax-loader1.gif" alt="search" style="width:100px;height:100px;"></img>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+<script src="../static/js/networkgraph.js"></script>
+</div>
+
+<div id="networksummary">
+<h4 id="networktitle"><center>Top 20 Most "Influential" Providers</center></h4>
+<div id="doctorslist">
+<img id= "loader2" src="../static/pics/ajax-loader1.gif" alt="search" style="width:100px;height:100px;"></img>
+<script> var data1 = {{ data1|safe }}; </script>
+<script src="../static/js/docrec.js"></script>
+</div>
+</div>
+
+<!-- <div id = "doctorrec">
+<h4><center> Most "Influential" Doctors in This Network </center></h4>
+<div id="doctorslist">
+<script> var data1 = {{ data1|safe }}; </script>
+<script src="../static/js/docrec.js"></script>
+</div>
+</div>
+
+</div> -->
+
+
+<div id="footer">
+Analysis by Itelina Ma. Data Source: CMS Medicare.
+</div>
+
+</body>
+</html>
