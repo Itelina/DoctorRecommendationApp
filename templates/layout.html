@@ -3,14 +3,16 @@
 <head>
 <meta charset="utf-8">
 
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-<link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">
+<script src="../static/js/jQuery.min.js"></script>
+<link href="../static/css/bootstrap.min.css" rel="stylesheet">
 
 <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
 <script src="//code.jquery.com/jquery-1.10.2.js"></script>
 <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
 <script src="../static/js/chain.min.js"></script>
 <link rel="stylesheet" type="text/css" href="static/css/layout.css">
+
+<link rel="icon" type="image/png" href="../static/pics/doctor.png">
 
 </head>
 
@@ -34,7 +36,7 @@
 
 </script>
 <div class="ui-widget">
-  <input id="tags">
+  <input id="tags" placeholder="Search for city ...">
 </div>
 </td>
 
@@ -47,7 +49,11 @@
 <select id="type" name="type">
 	<option value="">--</option>
 	{% for type in classdict.keys() %}
-  		<option value="{{type}}">{{type}}</option>
+		{% if type == "Allopathic & Osteopathic Physicians" %}
+			<option selected="selected" value="{{type}}">{{type}}</option>
+  		{% else %}
+  			<option value="{{type}}">{{type}}</option>
+  		{% endif %}
 	{% endfor %}
 </select>
 </td>
@@ -57,8 +63,13 @@
 <select id="classification" name="classification">
 	<option value="">--</option>
 	{% for type, value in classdict.iteritems() %}
+	<option class="{{type}}" value="All">All</option>
 		{% for classf in value.keys() %}
-	  		<option class="{{type}}" value="{{classf}}">{{classf}}</option>
+			{% if classf == "Internal Medicine" %}
+				<option selected="selected" class="{{type}}" value="{{classf}}">{{classf}}</option>
+			{% else %}
+	  			<option class="{{type}}" value="{{classf}}">{{classf}}</option>
+	  		{% endif %}
 		{% endfor %}
 	{% endfor %}
 </select>
@@ -69,11 +80,16 @@
 <td>
 <select id="specialization" name="specialization">
 	<option value="">--</option>
+	<option class="All" value="All">All</option>
 	{% for type, value in classdict.iteritems() %}
 		{% for classf, spec in value.iteritems() %}
 		<option class="{{classf}}" value="All">All</option>
 			{% for value in spec %}
-	  			<option class="{{classf}}" value="{{value}}">{{value}}</option>
+				{% if value == "General" %}
+					<option selected="selected" class="{{classf}}" value="{{value}}">{{value}}</option>
+				{% else %}
+	  				<option class="{{classf}}" value="{{value}}">{{value}}</option>
+	  			{% endif %}
 	  		{% endfor %}
 		{% endfor %}
 	{% endfor %}
@@ -94,7 +110,11 @@ $("#specialization").chainedTo("#classification");
 <select id="type2" name="type2">
 	<option value="">--</option>
 	{% for type in classdict.keys() %}
-  		<option value="{{type}}">{{type}}</option>
+  		{% if type == "Allopathic & Osteopathic Physicians" %}
+			<option selected="selected" value="{{type}}">{{type}}</option>
+  		{% else %}
+  			<option value="{{type}}">{{type}}</option>
+  		{% endif %}
 	{% endfor %}
 </select>
 </td>
@@ -104,8 +124,13 @@ $("#specialization").chainedTo("#classification");
 <select id="classification2" name="classification2">
 	<option value="">--</option>
 	{% for type, value in classdict.iteritems() %}
+		<option class="{{type}}" value="All">All</option>
 		{% for classf in value.keys() %}
-	  		<option class="{{type}}" value="{{classf}}">{{classf}}</option>
+	  		{% if classf == "Internal Medicine" %}
+				<option selected="selected" class="{{type}}" value="{{classf}}">{{classf}}</option>
+			{% else %}
+	  			<option class="{{type}}" value="{{classf}}">{{classf}}</option>
+	  		{% endif %}
 		{% endfor %}
 	{% endfor %}
 </select>
@@ -119,11 +144,16 @@ $("#classification2").chainedTo("#type2");
 <td>
 <select id="specialization2" name="specialization2">
 	<option value="">--</option>
+	<option class="All" value="All">All</option>
 	{% for type, value in classdict.iteritems() %}
 		{% for classf, spec in value.iteritems() %}
 		<option class="{{classf}}" value="All">All</option>
 			{% for value in spec %}
-	  			<option class="{{classf}}" value="{{value}}">{{value}}</option>
+	  			{% if value == "Cardiovascular Disease" %}
+					<option selected="selected" class="{{classf}}" value="{{value}}">{{value}}</option>
+				{% else %}
+	  				<option class="{{classf}}" value="{{value}}">{{value}}</option>
+	  			{% endif %}
 	  		{% endfor %}
 		{% endfor %}
 	{% endfor %}
@@ -149,14 +179,54 @@ $("#specialization2").chainedTo("#classification2");
 <script src="../static/js/networkgraph.js"></script>
 </div>
 
+<div id = "graphdesc">
+<p> <i>This network graph displays the referring relationships </p>
+<p> between all providers specified in the search parameters. </p>
+<p>You can drag the nodes and explore the connections. </i></p>
+</div>
+
+<div id="graphdemo">
+<img id= "gdemo" src="../static/pics/networkdemo.png" alt="search" style="width:500px;height:400px;"></img>
+</div>
+
+<div id="grapherror">
+<p> Your search parameters did not return any network relationships. Try adjusting your search parameters. </p>
+</div>
+
+<div id="legend">
+<table>
+	<tr>
+		<td colspan="2"><b> Legends </b></td>
+	</tr>
+	<tr>
+		<td width ="20"><img src = "http://static.squarespace.com/static/52803c95e4b0a13e700c5f6c/t/528d8d0ce4b05976643a6961/1385008397926/light-blue-circle.png" style="width:10px;height:10px;"></img></td>
+		<td> Referring Doctors </td>
+	</tr>
+	<tr>
+		<td><img src = "http://i34.tinypic.com/zwaxs8.png" style="width:10px;height:10px;"></img></td>
+		<td> Referred To Doctors </td>
+	</tr>
+</table>
+</div>
+
 <div id="networksummary">
-<h4 id="networktitle"><center>Top 20 Most "Influential" Providers</center></h4>
+<h4 id="networktitle"><center>Providers Ranked by "Influence"</center></h4>
 <div id="doctorslist">
 <img id= "loader2" src="../static/pics/ajax-loader1.gif" alt="search" style="width:100px;height:100px;"></img>
 <script> var data1 = {{ data1|safe }}; </script>
-<script src="../static/js/docrec.js"></script>
 </div>
 </div>
+
+<div id="topdocdesc">
+<p> <i> We can identify the top most "important" or "influential"</p>
+<p> doctors within the network by using metrics such as the </p>
+<p> Engenvector Centrality or degree. </i></p>
+</div>
+
+<div id="topdocdemo">
+<img id= "docdemo" src="../static/pics/docsdemo.png" alt="search" style="width:500px;height:400px;"></img>
+</div>
+
 
 <!-- <div id = "doctorrec">
 <h4><center> Most "Influential" Doctors in This Network </center></h4>
@@ -170,7 +240,7 @@ $("#specialization2").chainedTo("#classification2");
 
 
 <div id="footer">
-Analysis by Itelina Ma. Data Source: CMS Medicare.
+Analysis by Itelina Ma. Data Source: <a href="https://questions.cms.gov/faq.php?faqId=7977">CMS Medicare.</a> Development Code: <a href="https://github.com/Itelina/DoctorRecommendationApp"> Github Link </a>
 </div>
 
 </body>

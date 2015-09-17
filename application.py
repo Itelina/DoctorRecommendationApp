@@ -42,10 +42,8 @@ def getnetworkdata():
 	# TODO: don't always default to NYC
 	vardict['city'] = vardict.get('city', 'New York, NY').split(",")[0]
 
-	#Build in exception for when no inputs
-	linenr = {}
-	linenr['class1'] = [12, 20, 28]
-	linenr['class2'] = [41, 49, 57]
+	#Build in exception for when putting in "all" as inputs
+	linenr = {'spec1':[12, 20, 28], 'spec2':[41, 49, 57], 'class1':[11, 19, 27], 'class2':[40, 48, 56]}
 
 	#Get weighted edges with NPI numbers
 	fd = open('sqlscript.sql', 'r')
@@ -53,50 +51,48 @@ def getnetworkdata():
 	fd.close()
 	sqlsplit = sqlFile.split("\n")
 
-	if vardict['spec1'] == "All" and vardict['spec2'] != "All":
-	    skiplines = linenr['class1']
-	    sqlFile = " ".join([line for i, line in enumerate(sqlsplit) if i not in skiplines])
-
-	if vardict['spec2'] == "All" and vardict['spec1'] != "All":
-	    skiplines = linenr['class2']
-	    sqlFile = " ".join([line for i, line in enumerate(sqlsplit) if i not in skiplines])
-
-	if vardict['spec1'] == "All" and vardict['spec2'] == "All":
-	    skiplines = linenr['class1'] + linenr['class2']
-	    sqlFile = " ".join([line for i, line in enumerate(sqlsplit) if i not in skiplines])
-
-
+	skiplines = [linenr[item] for item in [key for key, value in vardict.iteritems() if value in "All"]]
+	import itertools
+	skiplines = list(itertools.chain(*skiplines))
+	sqlFile = " ".join([line for i, line in enumerate(sqlsplit) if i not in skiplines])
 	sqlcommand = ['"' + vardict[word] + '"' if word in vardict.keys() else word for word in sqlFile.split()]
 	sql = " ".join(sqlcommand)
 	cmd = connection.execute(sql)
 	wedges = {(line[0], line[1]):line[3] for line in cmd}
 
+	print "length of wedges:" + str(len(wedges))
+
+	print "made weighted edges ..."
+
 	#Get all doctor information including names and taxonomy codes
 	fd = open('sqlscript2.sql', 'r')
 	sqlFile = fd.read()
 	fd.close()
-
 	sqlsplit = sqlFile.split("\n")
+	
+	linenr2 = {'spec1':[11, 27, 43], 'spec2':[17, 33, 49], 'class1':[10, 26, 42], 'class2':[16, 32, 48]}
 
-	if vardict['spec1'] == "All" and vardict['spec2'] == "All":
-	    skiplines = [9, 10, 11, 12, 13, 20, 21, 22, 23, 24, 31, 32, 33, 34, 35]
-	    sqlFile = " ".join([line for i, line in enumerate(sqlsplit) if i not in skiplines])
-	if vardict['spec1'] == "All" and vardict['spec2'] != "All":
-	    skiplines = [10, 11, 21, 22, 32, 33]
-	    sqlFile = " ".join([line for i, line in enumerate(sqlsplit) if i not in skiplines])
-	if vardict['spec2'] == "All" and vardict['spec1'] != "All":
-	    skiplines = [11, 12, 22, 23, 33, 34]
-	    sqlFile = " ".join([line for i, line in enumerate(sqlsplit) if i not in skiplines])
-	    
+	allist = [key for key, value in vardict.iteritems() if value in "All"]
+
+	skiplines = [linenr2[item] for item in [key for key, value in vardict.iteritems() if value in "All"]]
+	import itertools
+	skiplines = list(itertools.chain(*skiplines))
+
+	sqlFile = " ".join([line for i, line in enumerate(sqlsplit) if i not in skiplines])
 	sqlcommand = ['"' + vardict[word] + '"' if word in vardict.keys() else word for word in sqlFile.split()]
 	sql = " ".join(sqlcommand)
 	cmd = connection.execute(sql)
 	doctors = {line[0]:(line[1], line[2], line[3], line[4], line[5], line[6], line[7], line[8], line[9]) for line in cmd}
 
+	print "length of doctors:" + str(len(doctors))
+	print "made doctors list..."
+
 	#Get taxonomy code mapping
 	sql = "SELECT Code, Type, Classification, Specialization from taxonomy;"
 	cmd = connection.execute(sql)
 	taxonomy = {line[0]:(line[1], line[2], line[3]) for line in cmd}
+
+	print "made taxonomy ..."
 
 	#Create nodes for inserting into networkx
 	import itertools
@@ -157,16 +153,21 @@ def getnetworkdata():
 	G.add_nodes_from(nodes)
 	G.add_weighted_edges_from(edges)
 
-	centrality = nx.eigenvector_centrality(G, max_iter=100000)
+
+	try:
+		centrality = nx.eigenvector_centrality(G, max_iter=10000) 
+	except nx.NetworkXError:
+		centrality = nx.degree_centrality(G) 
+
 	eigenlist = [(node,centrality[node]) for node in centrality]
 
-	topdoctors = sorted(eigenlist, key = lambda tup: -tup[1])[0:20]
+	topdoctors = sorted(eigenlist, key = lambda tup: -tup[1])
 
 	topdocjson = []
 	for i, doctor in enumerate(topdoctors):
 	    newdict = {}
 	    newdict['rank'] = i + 1
-	    newdict['name'] = "DR. " + doctor[0]
+	    newdict['name'] = doctor[0]
 	    newdict['NPI'] = dnames2[doctor[0]]
 	    newdict['add'] = doctors[dnames2[doctor[0]]][5] + ", " + doctors[dnames2[doctor[0]]][6] + ", "+ doctors[dnames2[doctor[0]]][7] + ", "+ doctors[dnames2[doctor[0]]][8]
 	    newdict['url'] = "https://www.google.com/search?q=" + "dr+" + doctor[0].split(", ")[0] + "+" + doctor[0].split(", ")[1]
