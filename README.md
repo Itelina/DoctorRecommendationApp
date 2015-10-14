@@ -24,7 +24,7 @@ Sources for the data:
 	4. Taxonomy Crosswalk
 	https://www.cms.gov/Medicare/Provider-Enrollment-and-Certification/MedicareProviderSupEnroll/Downloads/TaxonomyCrosswalk.pdf
 	
-  5. NPI
+	5. NPI
 	https://www.cms.gov/Regulations-and-Guidance/HIPAA-Administrative-Simplification/NationalProvIdentStand/DataDissemination.html
 	
 	6. Physician Compare
