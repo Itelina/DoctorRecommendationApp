@@ -30,5 +30,3 @@ Sources for the data:
 	6. Physician Compare
 	https://data.medicare.gov/data/physician-compare
 
-	7. Specialty Certificates
-http://www.abms.org/member-boar
